@@ -1,17 +1,13 @@
-# License Plate Recognition > 2025-04-02 6:20am
+# License Plate Recognition > resized640_aug3x-ACCURATE
 https://universe.roboflow.com/roboflow-universe-projects/license-plate-recognition-rxg4e
 
 Provided by a Roboflow user
 License: CC BY 4.0
 
-Here are a few use cases for this project:
-
-1. Law Enforcement and Security: The License Plate Recognition model can be employed by law enforcement agencies to automatically detect and record license plates of vehicles involved in traffic violations, criminal activities or search for stolen vehicles.
-
-2. Parking Management: This model can be utilized by parking lot operators to automate the entry, exit and vehicle records, facilitating seamless parking experience for users and enabling efficient parking management.
-
-3. Toll Collection: Highways and toll plazas can implement the License Plate Recognition system to automatically identify and track vehicles passing through toll booths, enhancing the convenience for drivers and expediting the toll collection process.
-
-4. Access Control: Business parks, gated communities, and private properties can use the License Plate Recognition model to enable automatic access or authentication for authorized vehicles, providing secure and hassle-free entry.
-
-5. Traffic Monitoring and Statistics: Transportation authorities can employ this model to gather real-time data about traffic, monitor congestion, and analyze traffic patterns, providing valuable insights for urban planning and infrastructure development.
+* `License Plate Detection` dataset images and annotations were cloned from the following projects:
+	* https://universe.roboflow.com/carplates2/licenseplate_v2
+	* https://universe.roboflow.com/a-stx8a/licenseplateimage_thresholdfiltered---roboflow/
+	* https://universe.roboflow.com/augmented-startups/vehicle-registration-plates-trudk
+	* https://universe.roboflow.com/xavier-jimenez/placas-stcpz/
+	* https://universe.roboflow.com/yolo-training-jaqog/yolo-training-wis72/
+	* https://universe.roboflow.com/abdullahi-ayantayo/car-license-plate-eosye/

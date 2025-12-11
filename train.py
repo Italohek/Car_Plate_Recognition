@@ -14,7 +14,7 @@ def main():
 
     results = model.train(
         data="dataset/data.yaml", 
-        epochs=50, 
+        epochs=20, 
         imgsz=640, 
         device="0",
 
