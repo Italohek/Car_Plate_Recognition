@@ -1,5 +1,4 @@
 from ultralytics import YOLO # type: ignore
-import torch
 
 def main():
     model = YOLO("yolov8n.pt")
