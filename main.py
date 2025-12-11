@@ -16,76 +16,52 @@ def corrigir_placa(texto):
     1. Mercosul: LLLNLNN (Ex: ABC1D23)
     2. Antiga:   LLLNNNN (Ex: ABC1234)
     """
-    # 1. Limpeza
+    # remove tudo que não é letra ou número e deixa maiúsculo
     texto_limpo = re.sub(r'[^a-zA-Z0-9]', '', texto).upper()
     
+    # O padrão deve ter exatamente 7 caracteres alfanuméricos
     if len(texto_limpo) != 7:
         return None
 
-    # Dicionários de correção
+    # Dicionários de correção visual
     dict_char_to_num = {'O': '0', 'I': '1', 'J': '1', 'Z': '2', 'A': '4', 'S': '5', 'G': '6', 'B': '8', 'Q': '0', 'D': '0'}
     dict_num_to_char = {'0': 'O', '1': 'I', '2': 'Z', '4': 'A', '5': 'S', '6': 'G', '8': 'B'}
 
     lista_chars = list(texto_limpo)
 
-    # --- 2. CORREÇÃO DAS POSIÇÕES COMUNS ---
-    # Tanto Mercosul quanto Antiga têm:
-    # - 3 Primeiros: Letras
-    # - 4º digito (index 3): Número
-    # - 2 Últimos: Números
+    """
+    abaixo temos as correcoes para o padrão esperado, no seguinte padrão:
+    caracteres 0 e 1 são letras
+    caracteres 2 e 3 são números
+    caracteres 4, 5 e 6 são letras
+    """
 
-    # Posições 0, 1, 2: TÊM que ser LETRAS
-    for i in [0, 1, 2]:
+    for i in [0, 1]:
         if lista_chars[i] in dict_num_to_char:
             lista_chars[i] = dict_num_to_char[lista_chars[i]]
 
-    # Posição 3: TEM que ser NÚMERO
-    if lista_chars[3] in dict_char_to_num:
-        lista_chars[3] = dict_char_to_num[lista_chars[3]]
-
-    # Posições 5, 6: TÊM que ser NÚMEROS
-    for i in [5, 6]:
+    for i in [2, 3]:
         if lista_chars[i] in dict_char_to_num:
             lista_chars[i] = dict_char_to_num[lista_chars[i]]
 
-    # --- 3. DECISÃO DO ÍNDICE 4 (O Pivô) ---
-    # Aqui decidimos se é Mercosul ou Antiga baseada no que temos
+    for i in [4, 5, 6]:
+        if lista_chars[i] in dict_num_to_char:
+            lista_chars[i] = dict_num_to_char[lista_chars[i]]
+
+    # Reconstrói a string
+    placa_final = "".join(lista_chars)
+
+    # 2. Validação Final com Regex
+    padrao_regex = re.compile(r'^[A-Z]{2}[0-9]{2}[A-Z]{3}$')
     
-    char_meio = lista_chars[4]
-
-    # Regexes para validação final
-    regex_mercosul = re.compile(r'^[A-Z]{3}[0-9][A-Z][0-9]{2}$')
-    regex_antiga   = re.compile(r'^[A-Z]{3}[0-9]{4}$')
-
-    # Cenário A: O caractere já é uma Letra? -> Tenta validar como Mercosul
-    if char_meio.isalpha():
-        placa_teste = "".join(lista_chars)
-        if regex_mercosul.match(placa_teste):
-            return f"{placa_teste}"
-        
-        # Se falhou, talvez seja um número lido como letra (Ex: 'B' que era '8')
-        if char_meio in dict_char_to_num:
-            lista_chars[4] = dict_char_to_num[char_meio] # Vira número
-            
-    # Cenário B: O caractere é (ou virou) um Número? -> Tenta validar como Antiga
-    if lista_chars[4].isdigit():
-        placa_teste = "".join(lista_chars)
-        if regex_antiga.match(placa_teste):
-             return placa_teste # 
-        
-        # Se falhou, talvez seja uma letra lida como número (Ex: '0' que era 'O')
-        if lista_chars[4] in dict_num_to_char:
-            lista_chars[4] = dict_num_to_char[lista_chars[4]] # Vira letra
-            # Testa Mercosul de novo
-            placa_teste = "".join(lista_chars)
-            if regex_mercosul.match(placa_teste):
-                return placa_teste # RETORNE APENAS A STRING PURA (7 chars)
-
-    return None
-
+    if padrao_regex.match(placa_final):
+        # Retorna formatado com espaço visual: "AB12 CDE"
+        return f"{placa_final}"
+    else:
+        return None
 
 print("Iniciando...")
-model = YOLO('runs/detect/train7/weights/best.pt')  # carrega o modelo treinado
+model = YOLO('runs/detect/train4/weights/best.pt')  # Carrega o modelo treinado
 reader = easyocr.Reader(['en'], gpu=True) # 'en' reconhece melhor letras/numeros gerais que 'pt'
 
 cap = cv2.VideoCapture(video_path)
@@ -174,7 +150,6 @@ while True:
                 cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
                 if final_text:
                     cv2.putText(frame, final_text, (x1, y1-10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
-                    cv2.putText(frame, f"{confidence:.2f}", (x1, y1-30), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
 
     cv2.imshow("LPR Estavel", frame)
     out.write(frame)
